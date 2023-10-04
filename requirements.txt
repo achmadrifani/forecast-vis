@@ -56,7 +56,7 @@ Pympler
 PySocks
 python-dateutil
 pytz
-pywin32==306
+pywin32
 PyYAML
 pyzmq
 referencing
