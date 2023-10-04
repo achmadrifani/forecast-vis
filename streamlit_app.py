@@ -57,7 +57,7 @@ def load_df(prov):
     df = pd.read_csv(f"http://202.90.198.220/MEWS/CSV/kecamatanforecast-{prov}.csv", sep=";",
                      names=["area_id", "time", "tmin", "tmax", "humin", "humax", "hu", "t", "weather", "wd", "ws"],
                      parse_dates=["time"])
-    df_geo = pd.read_csv(f"C:\\Users\\Lenovo\\Downloads\\kecamatan_geofeatures.csv", sep=";",
+    df_geo = pd.read_csv(f"kecamatan_geofeatures.csv", sep=";",
                          names=["area_id", "kec", "kab", "prov", "lat", "lon"])
     df = pd.merge(df, df_geo, how="inner", on="area_id")
 
