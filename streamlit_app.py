@@ -157,13 +157,13 @@ with col3:
     if kec_sel:
         # Inisialisasi peta menggunakan Folium
         lon,lat = df_kec_sel["lon"].iloc[0],df_kec_sel["lat"].iloc[0]
-        m = folium.Map(location=[lat,lon], zoom_start=13)  # Koordinat awal dan level zoom
+        m = folium.Map(location=[lat,lon], zoom_start=10)  # Koordinat awal dan level zoom
         # Tambahkan tanda (marker) ke peta
         folium.Marker([lat,lon], tooltip=kec_sel).add_to(m)
         st_map = st_folium(m, height=370)
     else:
         m = folium.Map(location=[-2.4833826,117.8902853], zoom_start=5)  # Koordinat awal dan level zoom
         # Tambahkan tanda (marker) ke peta
-        st_map = st_folium(m, height=370)
+        st_map = st_folium(m, height=240)
 
 
