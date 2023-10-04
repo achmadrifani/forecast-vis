@@ -76,11 +76,11 @@ def load_df(prov):
 
 st.set_page_config(layout="wide")
 st.header("BMKG Forecast")
-st.write("Visualisasi Forecast BMKG")
 
 col1,col2,col3 = st.columns([0.3,0.3,0.4],gap='medium')
 
 with col1:
+    st.write("## Visualisasi Forecast BMKG")
     prov_select = st.selectbox('Provinsi',prov_list,index=None, placeholder="Pilih Provinsi ...")
 
     if prov_select is not None:
