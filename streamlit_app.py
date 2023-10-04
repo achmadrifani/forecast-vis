@@ -4,6 +4,9 @@ import pandas as pd
 import altair as alt
 import folium
 from datetime import datetime, timedelta
+from PIL import Image
+from io import BytesIO
+import requests
 
 
 fname_dict ={'ACEH':"aceh", 'SUMATERA UTARA':'sumut', 'SUMATERA BARAT':'sumbar', 'RIAU':'riau','KEPULAUAN RIAU':'kepriau',
@@ -20,6 +23,13 @@ prov_list = ['ACEH', 'SUMATERA UTARA', 'SUMATERA BARAT', 'RIAU','KEPULAUAN RIAU'
              'KALIMANTAN SELATAN', "KALIMANTAN UTARA",'BALI', 'NUSA TENGGARA BARAT', 'NUSA TENGGARA TIMUR', 'SULAWESI UTARA', 'GORONTALO',
              'SULAWESI TENGAH', 'SULAWESI BARAT', 'SULAWESI SELATAN','SULAWESI TENGGARA',
              'MALUKU', 'MALUKU UTARA', 'PAPUA','PAPUA BARAT']
+sat_prov_dict ={'ACEH':"Aceh", 'SUMATERA UTARA':'Sumut', 'SUMATERA BARAT':'Sumbar', 'RIAU':'Riau','KEPULAUAN RIAU':'Kepri',
+             'JAMBI':'Jambi', 'BENGKULU':'Bengkulu', 'SUMATERA SELATAN':'Sumsel','KEPULAUAN BANGKA BELITUNG':'Babel', 'LAMPUNG':'Lampung',
+             'DKI JAKARTA':'Jakarta', 'BANTEN':'Banten', 'JAWA BARAT':'Jabar', 'JAWA TENGAH':'Jateng', 'DAERAH ISTIMEWA YOGYAKARTA':'Yogyakarta',
+             'JAWA TIMUR':'Jatim', 'KALIMANTAN BARAT':'Kalbar', 'KALIMANTAN TENGAH':'Kalteng', 'KALIMANTAN TIMUR':'Kaltim',
+             'KALIMANTAN SELATAN':'Kalsel', "KALIMANTAN UTARA":'Kaltara','BALI':'Bali', 'NUSA TENGGARA BARAT':'NTB', 'NUSA TENGGARA TIMUR':'NTT', 'SULAWESI UTARA':'Sulut', 'GORONTALO':'Gorontalo',
+             'SULAWESI TENGAH':'Sulteng', 'SULAWESI BARAT':'Sulbar', 'SULAWESI SELATAN':'Sulsel','SULAWESI TENGGARA':'Sultra',
+             'MALUKU':'Maluku', 'MALUKU UTARA':'Malut', 'PAPUA':'Papua','PAPUA BARAT':'Papuabarat'}
 wx_icon_dict = {0:"https://www.bmkg.go.id/asset/img/weather_icon/ID/cerah-am.png",
                 1:"https://www.bmkg.go.id/asset/img/weather_icon/ID/cerah%20berawan-am.png",
                 2:"https://www.bmkg.go.id/asset/img/weather_icon/ID/cerah%20berawan-am.png",
@@ -68,7 +78,7 @@ st.set_page_config(layout="wide")
 st.header("BMKG Forecast")
 st.write("Visualisasi Forecast BMKG")
 
-col1,col2,col3 = st.columns([0.3,0.1,0.4],gap='medium')
+col1,col2,col3 = st.columns([0.3,0.3,0.4],gap='medium')
 
 with col1:
     prov_select = st.selectbox('Provinsi',prov_list,index=None, placeholder="Pilih Provinsi ...")
@@ -123,17 +133,37 @@ else:
     st.write("## Prakiraan Cuaca")
     st.write("## Grafik Temperatur")
 
+if prov_select is not None:
+    col2.write("## Citra Satelit Terkini")
+    sat_url = f"https://satelit.bmkg.go.id/IMAGE/HIMA/H08_EH_{sat_prov_dict[prov_select]}.png"
+    response = requests.get(sat_url)
+    if response.status_code == 200:
+        # Open the image from the downloaded content
+        image = Image.open(BytesIO(response.content))
+
+        # Get the size (width and height) of the image
+        width, height = image.size
+
+        # Display the image
+        col2.image(image)
+    else:
+        col2.write("Failed to download the image from the URL.")
+else:
+    col2.write("## Citra Satelit Terkini")
+    col2.image(f"https://satelit.bmkg.go.id/IMAGE/HIMA/H08_EH_Indonesia.png")
+
 with col3:
+    st.write("## Lokasi")
     if kec_sel:
         # Inisialisasi peta menggunakan Folium
         lon,lat = df_kec_sel["lon"].iloc[0],df_kec_sel["lat"].iloc[0]
         m = folium.Map(location=[lat,lon], zoom_start=13)  # Koordinat awal dan level zoom
         # Tambahkan tanda (marker) ke peta
         folium.Marker([lat,lon], tooltip=kec_sel).add_to(m)
-        st_map = st_folium(m, width=300, height=300)
+        st_map = st_folium(m, height=370)
     else:
         m = folium.Map(location=[-2.4833826,117.8902853], zoom_start=5)  # Koordinat awal dan level zoom
         # Tambahkan tanda (marker) ke peta
-        st_map = st_folium(m, width=300, height=300)
+        st_map = st_folium(m, height=370)
 
 
